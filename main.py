@@ -12,7 +12,7 @@ class NetflixCloneTest(unittest.TestCase):
 
     @classmethod
     def setUp(self):
-        s = Service("D:/chromedriver.exe" )
+        s = Service("/usr/local/bin/chromedriver")
         self.driver = webdriver.Chrome(service= s)
         self.driver.get("http://localhost:3000/login")
         self.driver.maximize_window()
@@ -52,7 +52,8 @@ class NetflixCloneTest(unittest.TestCase):
         #2.7
         try:
             lgn_msg = self.driver.find_element(By.XPATH, "//div[@id='notistack-snackbar' and contains(text(), 'Login succeeded.')]")
-            self.assertEqual("Login succeeded.", lgn_msg.text, "Login failed with correct credentials")
+            WebDriverWait(self.driver, 10).until(EC.text_to_be_present_in_element((By.XPATH, "//div[@id='notistack-snackbar' and contains(text(), 'Login succeeded.')]"), "Login succeeded."))
+            # self.assertEqual("Login succeeded.", lgn_msg.text, "Login failed with correct credentials")
         except NoSuchElementException:
             print("Login is not successful")
 
@@ -62,9 +63,11 @@ class NetflixCloneTest(unittest.TestCase):
         self.driver.find_element(By.ID, "password").send_keys("verifythis")
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Sign In')]").click()
 
-        lgn_msg = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH,
-                                                                                       "//div[@id='notistack-snackbar' and contains(text(), 'Please check you credentials.')]")))
-        self.assertEqual("Please check you credentials.", lgn_msg.text, "Login successful with invalid credentials")
+
+        WebDriverWait(self.driver, 3).until(EC.text_to_be_present_in_element(
+            (By.XPATH, "//div[@id='notistack-snackbar' and contains(text(), 'Please check you credentials.')]"), "Please check you credentials."))
+
+        # self.assertEqual("Please check you credentials.", lgn_msg.text)
 
     def test_case_2_3(self):
         self.driver.find_element(By.ID, "email-or-phone-number").send_keys("ogulcan@bilkent.edu.tr")
@@ -72,9 +75,12 @@ class NetflixCloneTest(unittest.TestCase):
         self.driver.find_element(By.ID, "password").send_keys("invalidpassword")
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Sign In')]").click()
 
-        lgn_msg = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH,
-                                                                                       "//div[@id='notistack-snackbar' and contains(text(), 'Please check you credentials.')]")))
-        self.assertEqual("Please check you credentials.",  lgn_msg.text, "Login successful with invalid credentials")
+
+        WebDriverWait(self.driver, 3).until(EC.text_to_be_present_in_element(
+            (By.XPATH, "//div[@id='notistack-snackbar' and contains(text(), 'Please check you credentials.')]"),
+            "Please check you credentials."))
+
+        # self.assertEqual("Please check you credentials.",  lgn_msg.text)
 
     def test_case_2_4(self):
         self.driver.find_element(By.ID, "email-or-phone-number").send_keys("invalid@username")
@@ -84,7 +90,6 @@ class NetflixCloneTest(unittest.TestCase):
 
         lgn_msg = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH,
                                                                                        "//div[@id='notistack-snackbar' and contains(text(), 'Please check you credentials.')]")))
-        self.assertEqual("Please check you credentials.", lgn_msg.text, "Login successful with invalid credentials")
 
     def test_case_2_5(self):
         self.driver.find_element(By.ID, "email-or-phone-number").send_keys("invalid@username")
@@ -92,9 +97,9 @@ class NetflixCloneTest(unittest.TestCase):
         self.driver.find_element(By.ID, "password").send_keys("invalidpassword")
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Sign In')]").click()
 
-        lgn_msg = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH,
-                                                                                       "//div[@id='notistack-snackbar' and contains(text(), 'Please check you credentials.')]")))
-        self.assertEqual("Please check you credentials.", lgn_msg.text, "Login successful with invalid credentials")
+        WebDriverWait(self.driver, 3).until(EC.text_to_be_present_in_element(
+            (By.XPATH, "//div[@id='notistack-snackbar' and contains(text(), 'Please check you credentials.')]"),
+            "Please check you credentials."))
 
     def test_case_3(self):
         #3.2 , 3.3
@@ -147,8 +152,8 @@ class NetflixCloneTest(unittest.TestCase):
 
         pw = self.driver.find_element(By.ID, "password").get_attribute("value")
 
-        self.assertEqual( uname, "ogulcan@bilkent.edu.tr", "Username saved")
-        self.assertEqual( pw, "secret3", "Password saved")
+        self.assertEqual( uname, "ogulcan@bilkent.edu.tr")
+        self.assertEqual( pw, "secret3")
 
     @classmethod
     def tearDown(self):
